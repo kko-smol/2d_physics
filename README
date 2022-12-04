@@ -1,0 +1,3 @@
+Depends:
+
+apt install cmake g++ libx11-dev libx11-dev libxft-dev libxcursor-dev libgtest-dev

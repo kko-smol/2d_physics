@@ -1,0 +1,11 @@
+CMakeFiles/*
+.vscode/
+CMakeCache.txt
+*.a
+cmake_install.cmake
+Makefile
+sim_test
+CTestTestfile.cmake
+CollisionDetectorTest*
+Testing/
+_deps/
