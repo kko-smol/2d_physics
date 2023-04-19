@@ -8,6 +8,7 @@
 #include <NanaGui.h>
 #include <thread>
 #include <iostream>
+#include <atomic>
 
 int main(int argc, char** argv) {
 
@@ -47,6 +48,7 @@ int main(int argc, char** argv) {
         Vec2(1.0, 0.0), 10.0);
 
     world->addForce(std::make_shared<SimpleGravity>(Vec2{0, -9.8}));
+    world->addForce(std::make_shared<SimpleFriction>(0.1));
     world->addObject(boxl);
     world->addObject(boxr);
     world->addObject(boxb);
@@ -57,10 +59,12 @@ int main(int argc, char** argv) {
 
     NanaSceneDraw gui(world.get(), 300, 300);
 
+    std::atomic<bool> running(true);
+
     std::thread sim_thread([&]() {
         double t = 0.0;
         double dt = 0.001;
-        while (true) {
+        while (running) {
             sim.step(world, dt);
             t += dt;
             ui.draw(t, world.get());
@@ -70,5 +74,7 @@ int main(int argc, char** argv) {
 
     gui.start();
 
+    running = false;
+    sim_thread.join();
     return 0;
 }

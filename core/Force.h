@@ -20,3 +20,13 @@ public:
 private:
     Vec2 force_;
 };
+
+class SimpleFriction : public Force {
+public:
+    SimpleFriction(double friction);
+
+    Vec2 getForce(const Object *obj) const override;
+
+private:
+    double friction_;
+};

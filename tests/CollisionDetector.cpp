@@ -2,58 +2,109 @@
 
 #include <CollisionDetector.h>
 
-TEST(NoCollision, Box2BoxStatic) {
+static double epsilon = 0.0001;
+
+TEST(All, Sphere2SphereStatic) {
   CollisionDetector cd;
 
-    auto box1 = std::make_shared<Object>(
-        std::make_shared<Box>(2.0, 2.0),
+    double R = 1.0;
+    auto s1 = std::make_shared<Object>(
+        std::make_shared<Sphere>(R),
         std::make_shared<FreeTransform>(Vec2{0.0, 0.0}),
         Vec2(0.0, 0.0), 1.0);
 
-    auto box2 = std::make_shared<Object>(
-        std::make_shared<Box>(6.0, 2.0),
+    auto s2 = std::make_shared<Object>(
+        std::make_shared<Sphere>(R),
         std::make_shared<FreeTransform>(Vec2{0.0, 0.0}),
         Vec2(0.0, 0.0), 1.0);
 
-    Vec2 pointsToCheck[16] = {
-        {-1.0, 2.0}, {0.0, 2.0}, {1.0, 2.0},
-        {-1.0, -2.0}, {0.0, -2.0}, {1.0, -2.0},
-        {-4.0, 2.0}, {-4.0, 1.0}, {-4.0, 0.0},{-4.0, -1.0}, {-4.0,-2.0},
-        {4.0, 2.0}, {4.0, 1.0}, {4.0, 0.0}, {4.0, -1.0}, {4.0,-2.0}
+    std::pair<Vec2, bool> pointsToCheck[12] = {
+        {{2*R, 0.0}, false},
+        {{0.0, 2*R}, false},
+        {{-2*R, 0.0}, false},
+        {{0.0, -2*R}, false},
+        {{2*R + epsilon, 0.0}, false},
+        {{0.0, 2*R + epsilon}, false},
+        {{-2*R - epsilon, 0.0}, false},
+        {{0.0, -2*R - epsilon}, false},
+        {{2*R - epsilon, 0.0}, true},
+        {{0.0, 2*R - epsilon}, true},
+        {{-2*R + epsilon, 0.0}, true},
+        {{0.0, -2*R + epsilon}, true},
     };
-    for (int i = 0; i < 16; ++i) {
-        box1->transform()->setPos(pointsToCheck[i]);
-    
-        auto r = cd.detect(box1, box1->pos(), box2, box2->pos());
-
-        ASSERT_FALSE(r.valid());
+    for (int i = 0; i < 12; ++i) {
+        s1->transform()->setPos(pointsToCheck[i].first);
+        auto r = cd.detect(s1, s1->pos(), s2, s2->pos());
+        ASSERT_EQ(r.valid(), pointsToCheck[i].second) << i << " " << pointsToCheck[i].first << " : " << pointsToCheck[i].second;
     }
 }
 
-TEST(Collision, Box2BoxStatic) {
+TEST(All, Sphere2BoxStatic) {
   CollisionDetector cd;
 
-    auto box1 = std::make_shared<Object>(
-        std::make_shared<Box>(2.0, 2.0),
+    double R = 1.0;
+    auto s1 = std::make_shared<Object>(
+        std::make_shared<Sphere>(R),
         std::make_shared<FreeTransform>(Vec2{0.0, 0.0}),
         Vec2(0.0, 0.0), 1.0);
 
-    auto box2 = std::make_shared<Object>(
-        std::make_shared<Box>(6.0, 2.0),
+    auto b1 = std::make_shared<Object>(
+        std::make_shared<Box>(2*R, 2*R),
         std::make_shared<FreeTransform>(Vec2{0.0, 0.0}),
         Vec2(0.0, 0.0), 1.0);
 
-    Vec2 pointsToCheck[16] = {
-        {-1.0, 1.9}, {0.0, 1.9}, {1.0, 1.9},
-        {-1.0, -1.9}, {0.0, -1.9}, {1.0, -1.9},
-        {-3.9, 2.0}, {-3.9, 1.0}, {-3.9, 0.0},{-3.9, -1.0}, {-3.9,-2.0},
-        {3.9, 2.0}, {3.9, 1.0}, {3.9, 0.0}, {3.9, -1.0}, {3.9,-2.0}
+    std::pair<Vec2, bool> pointsToCheck[12] = {
+        {{2*R, 0.0}, false},
+        {{0.0, 2*R}, false},
+        {{-2*R, 0.0}, false},
+        {{0.0, -2*R}, false},
+        {{2*R + epsilon, 0.0}, false},
+        {{0.0, 2*R + epsilon}, false},
+        {{-2*R - epsilon, 0.0}, false},
+        {{0.0, -2*R - epsilon}, false},
+        {{2*R - epsilon, 0.0}, true},
+        {{0.0, 2*R - epsilon}, true},
+        {{-2*R + epsilon, 0.0}, true},
+        {{0.0, -2*R + epsilon}, true},
     };
-    for (int i = 0; i < 16; ++i) {
-        box1->transform()->setPos(pointsToCheck[i]);
-    
-        auto r = cd.detect(box1, box1->pos(), box2, box2->pos());
+    for (int i = 0; i < 12; ++i) {
+        s1->transform()->setPos(pointsToCheck[i].first);
+        auto r = cd.detect(s1, s1->pos(), b1, b1->pos());
+        ASSERT_EQ(r.valid(), pointsToCheck[i].second) << i << " " << pointsToCheck[i].first << " : " << pointsToCheck[i].second;
+    }
+}
 
-        ASSERT_TRUE(r.valid()) << i;
+TEST(All, Box2BoxStatic) {
+  CollisionDetector cd;
+
+    double R = 1.0;
+    auto s1 = std::make_shared<Object>(
+        std::make_shared<Box>(2*R, 2*R),
+        std::make_shared<FreeTransform>(Vec2{0.0, 0.0}),
+        Vec2(0.0, 0.0), 1.0);
+
+    auto b1 = std::make_shared<Object>(
+        std::make_shared<Box>(2*R, 2*R),
+        std::make_shared<FreeTransform>(Vec2{0.0, 0.0}),
+        Vec2(0.0, 0.0), 1.0);
+
+    std::pair<Vec2, bool> pointsToCheck[12] = {
+        {{2*R, 0.0}, false},
+        {{0.0, 2*R}, false},
+        {{-2*R, 0.0}, false},
+        {{0.0, -2*R}, false},
+        {{2*R + epsilon, 0.0}, false},
+        {{0.0, 2*R + epsilon}, false},
+        {{-2*R - epsilon, 0.0}, false},
+        {{0.0, -2*R - epsilon}, false},
+        {{2*R - epsilon, 0.0}, true},
+        {{0.0, 2*R - epsilon}, true},
+        {{-2*R + epsilon, 0.0}, true},
+        {{0.0, -2*R + epsilon}, true},
+    };
+    for (int i = 0; i < 12; ++i) {
+        s1->transform()->setPos(pointsToCheck[i].first);
+        auto r = cd.detect(s1, s1->pos(), b1, b1->pos());
+        ASSERT_EQ(r.valid(), pointsToCheck[i].second) << i << " " << pointsToCheck[i].first << " : " << pointsToCheck[i].second;
     }
 }

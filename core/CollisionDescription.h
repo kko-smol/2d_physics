@@ -6,6 +6,7 @@
 struct CollisionDescriprtion {
     std::vector<Vec2> points;
     std::vector<Vec2> normals;
+    double impact_distance;
 
     inline bool valid() const {
         return (normals.size() > 0) && (points.size() > 0);

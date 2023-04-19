@@ -7,16 +7,17 @@ void SimpleSim::step(ScenePtr scene, double dt) {
     std::map<ObjectPtr, Vec2> new_speeds;
     std::map<ObjectPtr, Vec2> new_positions;
 
-    for (auto f = scene->forces().cbegin(); f != scene->forces().cend(); ++f) {
-        for (auto o = scene->objects().cbegin(); o != scene->objects().cend(); ++o) {
-            auto force = (*f)->getForce(o->get()).mulElementWise((*o)->transform()->dof());
-
-            auto new_speed = (*o)->speed() + force * dt / (*o)->mass();
-            auto new_pos = (*o)->pos() + ((*o)->speed() + new_speed) * dt / 2;
-
-            new_speeds.insert({*o, new_speed});
-            new_positions.insert({*o, new_pos});
+    for (auto o = scene->objects().cbegin(); o != scene->objects().cend(); ++o) {
+        Vec2 forces_sum;
+        for (auto f = scene->forces().cbegin(); f != scene->forces().cend(); ++f) {
+            forces_sum = forces_sum + (*f)->getForce(o->get()).mulElementWise((*o)->transform()->dof());
         }
+
+        auto new_speed = (*o)->speed() + forces_sum * dt / (*o)->mass();
+        auto new_pos = (*o)->pos() + ((*o)->speed() + new_speed) * dt / 2;
+
+        new_speeds.insert({*o, new_speed});
+        new_positions.insert({*o, new_pos});
     }
 
     CollisionDetector collisionDetector;

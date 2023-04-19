@@ -6,17 +6,22 @@ void CollisionHandler::handleCollision(
     ObjectPtr o1, Vec2& o1_speed, Vec2& o1_pos,
     ObjectPtr o2, Vec2& o2_speed, Vec2& o2_pos,
     const CollisionDescriprtion& col) {
+    auto m1 = o1->mass();
+    auto m2 = o2->mass();
+    auto Esys = (o1_speed.mulElementWise(o1_speed) * m1 + o2_speed.mulElementWise(o2_speed) * m2) / 2.0;
+
+    std::cout << "o_speeds_in" << o1_speed << "," << o2_speed << "\n";
 
     auto r_o1_speed = (o1_speed - col.normal() * o1_speed.mulScalar(col.normal()) * 2).mulElementWise(o1->transform()->dof());
     auto r_o2_speed = (o2_speed - col.normal() * o2_speed.mulScalar(col.normal()) * 2).mulElementWise(o2->transform()->dof());
 
+    std::cout << "r_speeds" << r_o1_speed << "," << r_o2_speed << "\n";
+
     o1_speed = r_o1_speed.mulElementWise(o1->transform()->dof());
     o2_speed = r_o2_speed.mulElementWise(o2->transform()->dof());
 
-    auto m1 = o1->mass();
-    auto m2 = o2->mass();
+    std::cout << "o_speedst" << o1_speed << "," << o2_speed << "\n";
 
-    auto Esys = (o1_speed.mulElementWise(o1_speed) * m1 + o2_speed.mulElementWise(o2_speed) * m2) / 2.0;
 
     auto u1 = (o1_speed * (m1 - m2) + o2_speed * 2 * m2)/(m1 + m2);
     auto u2 = (o2_speed * (m2 - m1) + o1_speed * 2 * m1)/(m1 + m2);

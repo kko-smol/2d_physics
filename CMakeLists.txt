@@ -52,7 +52,7 @@ FetchContent_Declare(
 )
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
-
+include(GoogleTest)
 enable_testing()
 
 add_executable(
@@ -65,5 +65,33 @@ target_link_libraries(
   sim
 )
 
-include(GoogleTest)
+
 gtest_discover_tests(CollisionDetectorTest)
+
+
+add_executable(
+  StateIntegrationTest
+  tests/StateIntegrationTest.cpp
+)
+target_link_libraries(
+  StateIntegrationTest
+  GTest::gtest_main
+  sim
+)
+
+gtest_discover_tests(StateIntegrationTest)
+
+
+add_executable(
+  CollisionHandlerTest
+  tests/CollisionHandler.cpp
+)
+target_link_libraries(
+  CollisionHandlerTest
+  GTest::gtest_main
+  sim
+)
+
+gtest_discover_tests(CollisionHandlerTest)
+
+enable_testing()
